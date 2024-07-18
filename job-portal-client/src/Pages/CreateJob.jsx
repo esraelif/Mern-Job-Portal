@@ -10,7 +10,17 @@ const CreateJob = () => {
         formState: { errors },
     } = useForm()
 
-    const onSubmit = (data) => { console.log(data) }
+    const onSubmit = (data) => {
+        data.skills = selectedOption
+
+        fetch("http://localhost:3000/post-job", {
+            method: "POST",
+            headers: { 'content-type': 'application/json' },
+            bosy: JSON.stringify(data)
+
+
+        }).then(res => res.json()).then((result) => { console.log(result) })
+    }
     const options = [
         { value: "JavaScript", label: "JavaScript" },
         { value: "C++", label: "C++" },
@@ -123,7 +133,7 @@ const CreateJob = () => {
                             {...register("postedBy")} className='create-job-input' />
                     </div>
 
-                    <input type="submit" className='block mt-12 bg-blue text-white font-semibold px-8 py-2 rounded-sm cursor-pointer' />
+                    <input type="submit" className='block mt-12 bg-blue text-white font-semibold px-8 py-2 rounded-sm cursor-pointer' onSubmit={onSubmit} />
                 </form>
             </div>
         </div>
