@@ -160,7 +160,18 @@ const MyJobs = () => {
                         </div>
                     </div>
                 </div>
-//pagination
+                {/* //pagination */}
+                <div className='flex justify-center text-black space-x-8'>
+                    {
+                        currentPage > 1 && (
+                            <button className='hover:underline' onClick={prevPage}> Previous</button>
+                        )
+                    }
+                    {indexOfLastItem < jobs.length && (
+                        <button className='hover:underline' onClick={nextPage}>Next</button>
+                    )
+                    }
+                </div>
             </section>
         </div>
     );
