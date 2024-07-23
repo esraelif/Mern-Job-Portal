@@ -6,7 +6,7 @@ const SalaryPage = () => {
     const [salary, setSalary] = useState([])
     useEffect(() => {
         fetch("salary.json").then(res => res.json()).then(data => setSalary(data))
-    }, [])
+    }, [searchText])
 
     const handleSearch = () => {
         const filter = salary.filter((job) =>

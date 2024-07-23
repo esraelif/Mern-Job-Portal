@@ -7,14 +7,8 @@ const MyJobs = () => {
     const [searchText, setSearchText] = useState("");
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
-    //set current page
-    const [currentPage, setCurrentPage] = useState(1)
-    const itemsperPage = 4
-
-
-
-
-
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 4;
 
     useEffect(() => {
         setIsLoading(true);
@@ -34,32 +28,39 @@ const MyJobs = () => {
                 setError(error.message);
                 setIsLoading(false);
             });
-    }, [searchText]);
+    }, [email]);
 
-    //* pagination
-    const indexOfLastItem = currentPage * itemsperPage
-    const indexOfFirstItem = indexOfLastItem - itemsperPage
-    const currentJobs = jobs.slice(indexOfFirstItem, indexOfLastItem)
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentJobs = jobs.slice(indexOfFirstItem, indexOfLastItem);
 
-    //next btn & previous btn
     const nextPage = () => {
         if (indexOfLastItem < jobs.length) {
-            setCurrentPage(currentPage + 1)
+            setCurrentPage(currentPage + 1);
         }
-    }
+    };
     const prevPage = () => {
         if (currentPage > 1) {
-            setCurrentPage(currentPage - 1)
+            setCurrentPage(currentPage - 1);
         }
-    }
-
+    };
 
     const handleSearch = () => {
-        const filter = jobs.filter((job) =>
-            job.jobTitle.toLowerCase().indexOf(searchText.toLowerCase()) !== -1
+        const filteredJobs = jobs.filter((job) =>
+            job.jobTitle.toLowerCase().includes(searchText.toLowerCase())
         );
-        setJobs(filter);
-        setIsLoading(false);
+        setJobs(filteredJobs);
+    };
+
+    const handleDelete = (id) => {
+        fetch(`http://localhost:3000/job/${id}`, { method: "DELETE" })
+            .then(res => res.json())
+            .then(data => {
+                if (data.acknowledged === true) {
+                    alert("Deleted Successfully");
+                    setJobs(jobs.filter(job => job._id !== id));
+                }
+            });
     };
 
     if (isLoading) {
@@ -68,13 +69,6 @@ const MyJobs = () => {
 
     if (error) {
         return <div>Error: {error}</div>;
-    }
-    const handleDelete = (id) => {
-        fetch(`http://localhost:3000/job/${id}`, { method: "DELETE" }).then(res => res.json).then(data => {
-            if (data.acknowledge === true) {
-                alert("Deleted Successfully")
-            }
-        })
     }
 
     return (
@@ -127,50 +121,43 @@ const MyJobs = () => {
                                         </th>
                                     </tr>
                                 </thead>
-                                {
-                                    isLoading ? (<div className='flex items-center justify-center h-20'><p>loading...</p></div>) : (<tbody>
-                                        {jobs.map((job, index) => (
-                                            <tr key={index}>
-                                                <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 ">
-                                                    {index + 1}
-                                                </th>
-                                                <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 ">
-                                                    {job.jobTitle}
-                                                </td>
-                                                <td className="border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                                    {job.companyName}
-                                                </td>
-                                                <td className="border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                                    ${job.minPrice}-${job.maxPrice}
-                                                </td>
-                                                <td className="border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                                    <Link to={`/edit-job/${job.id}`}>
-                                                        <button className="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
-                                                    </Link>
-                                                </td>
-                                                <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                                                    <button onClick={() => handleDelete(job._id)} className="bg-red-700 text-white px-6 py-1 rounded">Delete</button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>)
-                                }
-
+                                <tbody>
+                                    {currentJobs.map((job, index) => (
+                                        <tr key={index}>
+                                            <th className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left text-blueGray-700 ">
+                                                {index + 1}
+                                            </th>
+                                            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 ">
+                                                {job.jobTitle}
+                                            </td>
+                                            <td className="border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                                {job.companyName}
+                                            </td>
+                                            <td className="border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                                ${job.minPrice}-${job.maxPrice}
+                                            </td>
+                                            <td className="border-t-0 px-6 align-center border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                                <Link to={`/edit-job/${job._id}`}>
+                                                    <button className="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
+                                                </Link>
+                                            </td>
+                                            <td className="border-t-0 px-6 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                                <button onClick={() => handleDelete(job._id)} className="bg-red-700 text-white px-6 py-1 rounded">Delete</button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
-                {/* //pagination */}
                 <div className='flex justify-center text-black space-x-8'>
-                    {
-                        currentPage > 1 && (
-                            <button className='hover:underline' onClick={prevPage}> Previous</button>
-                        )
-                    }
+                    {currentPage > 1 && (
+                        <button className='hover:underline' onClick={prevPage}>Previous</button>
+                    )}
                     {indexOfLastItem < jobs.length && (
                         <button className='hover:underline' onClick={nextPage}>Next</button>
-                    )
-                    }
+                    )}
                 </div>
             </section>
         </div>
